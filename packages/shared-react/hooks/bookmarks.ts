@@ -122,6 +122,11 @@ export function useUpdateBookmark(
         queryClient.invalidateQueries(
           api.bookmarks.getBookmark.queryFilter({ bookmarkId: req.bookmarkId }),
         );
+        queryClient.invalidateQueries(
+          api.bookmarks.getBookmarkHistory.queryFilter({
+            bookmarkId: req.bookmarkId,
+          }),
+        );
         scheduleInvalidateQueries(queryClient, api.lists.stats.pathFilter());
         return opts?.onSuccess?.(res, req, meta, context);
       },

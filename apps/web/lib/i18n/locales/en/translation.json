@@ -1428,6 +1428,20 @@
     "close_highlights": "Close highlights",
     "print": "Print",
     "highlights_saved_count": "{{count}} saved",
+    "history": {
+      "title": "History",
+      "empty_value": "(empty)",
+      "fields": {
+        "title": "Title",
+        "url": "URL",
+        "description": "Description",
+        "author": "Author",
+        "publisher": "Publisher",
+        "note": "Note",
+        "summary": "Summary",
+        "text": "Text"
+      }
+    },
     "unavailable_view": {
       "no_screenshot": "No screenshot saved"
     },

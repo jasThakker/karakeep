@@ -14,6 +14,7 @@ import {
 
 import type { ZApiKeyScope } from "@karakeep/shared/types/apiKeys";
 import { API_KEY_FULL_ACCESS_SCOPE } from "@karakeep/shared/types/apiKeys";
+import { BOOKMARK_HISTORY_FIELDS } from "@karakeep/shared/types/bookmarkHistory";
 import { BookmarkTypes } from "@karakeep/shared/types/bookmarks";
 import type { ZReaderViewReason } from "@karakeep/shared/types/bookmarks";
 
@@ -480,6 +481,40 @@ export const userReadingProgress = sqliteTable(
     unique().on(tb.bookmarkId, tb.userId),
     index("userReadingProgress_bookmarkId_idx").on(tb.bookmarkId),
     index("userReadingProgress_userId_idx").on(tb.userId),
+  ],
+);
+
+// One row per field changed by a user edit of a bookmark. Values are stored as
+// text so a single table covers every bookmark type (link, text, asset).
+export const bookmarkHistory = sqliteTable(
+  "bookmarkHistory",
+  {
+    id: text("id")
+      .notNull()
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    bookmarkId: text("bookmarkId")
+      .notNull()
+      .references(() => bookmarks.id, {
+        onDelete: "cascade",
+      }),
+    // The user who made the change.
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    field: text("field", { enum: BOOKMARK_HISTORY_FIELDS }).notNull(),
+    oldValue: text("oldValue"),
+    newValue: text("newValue"),
+    // Millisecond precision so edits made within the same second still sort
+    // newest first.
+    createdAt: createdAtMsField(),
+  },
+  (tb) => [
+    index("bookmarkHistory_bookmarkId_createdAt_idx").on(
+      tb.bookmarkId,
+      tb.createdAt,
+    ),
+    index("bookmarkHistory_userId_idx").on(tb.userId),
   ],
 );
 
